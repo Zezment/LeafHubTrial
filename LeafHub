@@ -1,63 +1,43 @@
-local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/REDzHUB/RedzLibV5/main/Source.Lua"))()
-
-local Window = redzlib:MakeWindow({
-  Title = "LeafHub : One Fruit Simulator",
-  SubTitle = "by LeafHub",
-  SaveFolder = "testando | redz lib v5.lua"
-})
-local Tab1 = Window:MakeTab({"Main", "cherry"})
-local Tab2 = Window:MakeTab({"Fruits hopper", "swords"})
-local Tab3 = Window:MakeTab({"Auto train stats", "cherry"})
-local Tab4 = Window:MakeTab({"Settings", "cherry"})
-
-Tab4:AddButton({"Dark Theme", function()
-  redzlib:SetTheme("Dark")
-end})
-
-Tab4:AddButton({"Darker Theme", function()
-  redzlib:SetTheme("Darker")
-end})
-
-Tab4:AddButton({"Dark Purple", function()
-  redzlib:SetTheme("Purple")
-end})
-
-Window:SelectTab(Tab2)
-local Section = Tab2:AddSection({"Section"})
-
-local Number = 0
-local Button = Tab2:AddButton({"Button", function()
-  Number = Number + 1
-  Section:Set("Number : " .. tostring(Number))
-  local Dialog = Window:Dialog({
-    Title = "Dialog",
-    Text = "This is a Dialog",
-    Options = {
-      {"Confirm", function()
-        
-      end},
-      {"Maybe", function()
-        
-      end},
-      {"Cancel", function()
-        
-      end}
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+    Name = "Rayfield Example Window",
+    LoadingTitle = "Rayfield Interface Suite",
+    LoadingSubtitle = "by Sirius",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = nil, -- Create a custom folder for your hub/game
+       FileName = "Big Hub"
+    },
+    Discord = {
+       Enabled = false,
+       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = false, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "Untitled",
+       Subtitle = "Key System",
+       Note = "No method of obtaining the key is provided",
+       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
     }
-  })
-end})
+})
+
+local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
+local Section = Tab:CreateSection("Section Example")
+
 local HttpService = game:GetService("HttpService")
 local username = game.Players.LocalPlayer.Name
 local visible = false
 
-local Toggle1 = Tab2:AddToggle({
+local Toggle = Tab:CreateToggle({
     Name = "Auto Fruit Server Hop",
-    Description = "This is a Toggle Example",
-    Default = autoserverhop,
+    CurrentValue = autoserverhop,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
     Callback = function(state)
         if state then
-            -- Put your auto fruit server hop code here
-           
-            -- Function to teleport the player to the position of a specified part
             local function teleportToPart(player, part)
                 if player and player.Character and part then
                     player.Character:SetPrimaryPartCFrame(part.CFrame)
@@ -66,24 +46,21 @@ local Toggle1 = Tab2:AddToggle({
                 return false
             end
 
-            -- Function to find and teleport to all handles
             local function teleportToAllHandles()
                 local tools = game.Workspace:GetChildren()
-                local teleportedHandles = {} -- Store teleported handles
+                local teleportedHandles = {}
 
                 for _, tool in ipairs(tools) do
                     if tool:IsA("Tool") then
-                        -- Check if the Tool has a Handle which is a MeshPart
                         local handles = tool:GetChildren()
                         for _, handle in ipairs(handles) do
                             if handle.Name == "Handle" and handle:IsA("MeshPart") then
-                                -- Teleport the player to the Handle
                                 local player = game.Players.LocalPlayer
                                 if teleportToPart(player, handle) then
-                                    table.insert(teleportedHandles, "**" .. handle.Parent.Name .. "**") -- Store handle parent name
+                                    table.insert(teleportedHandles, "**" .. handle.Parent.Name .. "**")
                                     print("Teleported to handle:", handle:GetFullName())
-                                    wait(1) -- Wait for 1 second before executing next code
-                                    -- Execute code to interact with the fruit
+                                    wait(1)
+
                                     function getNil(name, class, workspaceRef)
                                         local toolName = type(name) == "table" and workspaceRef[name[1]][name[2]][name[3]].Name or name
                                         for _, v in ipairs(workspaceRef:GetChildren()) do
@@ -92,7 +69,7 @@ local Toggle1 = Tab2:AddToggle({
                                             end
                                         end
                                     end
-                                    local workspaceRef = game.Workspace:WaitForChild("__GAME"):WaitForChild("__Players"):WaitForChild("Jukiye2uwu6") -- Assuming __GAME and __Players are objects
+                                    local workspaceRef = game.Workspace:WaitForChild("__GAME"):WaitForChild("__Players"):WaitForChild("Jukiye2uwu6")
                                     local toolName = workspaceRef:FindFirstChildOfClass("Tool").Name
                                     local args = {
                                         [1] = {
@@ -105,7 +82,7 @@ local Toggle1 = Tab2:AddToggle({
                                         }
                                     }
                                     game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
-                                    wait(2) -- Wait for 2 seconds before teleporting to the next fruit
+                                    wait(2)
                                 else
                                     warn("Failed to teleport player to Handle:", handle:GetFullName())
                                 end
@@ -117,13 +94,11 @@ local Toggle1 = Tab2:AddToggle({
                 return teleportedHandles
             end
 
-            -- Teleport to all handles and store teleported handles
             local teleportedHandles = teleportToAllHandles()
 
-            -- Construct embed message
             local embedMessage = {
                 title = "**Leaf Hub**",
-                color = tonumber(0xFF0000), -- Red color
+                color = tonumber(0xFF0000),
                 description = "",
                 fields = {
                     {
@@ -133,14 +108,12 @@ local Toggle1 = Tab2:AddToggle({
                 }
             }
 
-            -- Check if handles were found
             if #teleportedHandles > 0 then
                 embedMessage.description = "**Status:** Serverhopping\n**FruitsFound:** " .. table.concat(teleportedHandles, ", ")
             else
                 embedMessage.description = "**Status:** Serverhopping\n**FruitsFound:** None"
             end
 
-            -- Send embed message via webhook
             local response = syn.request({
                 Url = WebhookUrl,
                 Method = 'POST',
@@ -155,7 +128,6 @@ local Toggle1 = Tab2:AddToggle({
             print("Webhook Status Code:", response.StatusCode)
             print("Webhook Response Body:", response.Body)
 
-            -- Server hop after waiting 10 seconds
             wait(10)
             local success, errorMessage = pcall(function()
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
@@ -167,7 +139,6 @@ local Toggle1 = Tab2:AddToggle({
                 print("Error while attempting to server hop:", errorMessage)
             end
 
-            -- Toggle visibility of username
             visible = not visible
             if visible then
                 embedMessage.fields[1].value = nil
@@ -175,7 +146,6 @@ local Toggle1 = Tab2:AddToggle({
                 embedMessage.fields[1].value = username
             end
 
-            -- Send updated message via webhook
             local updatedResponse = syn.request({
                 Url = WebhookUrl,
                 Method = 'POST',
@@ -193,92 +163,4 @@ local Toggle1 = Tab2:AddToggle({
     end
 })
 
-local Toggle1 = Tab1:AddToggle({
-    Name = "Auto train combat",
-    Description = "This is a <font color='rgb(88, 101, 242)'>Toggle</font> Example",
-    Default = false,
-    Callback = function(enabled)
-        while true do
-            if enabled then
-                -- Check if the Combat tool exists in the backpack
-                local combatTool = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Combat")
-                if combatTool then
-                    -- Equip the Combat tool
-                    combatTool.Parent = game:GetService("Players").LocalPlayer.Character
-                end
-
-                local args = {
-                    [1] = {
-                        [1] = {
-                            [1] = "\4",
-                            [2] = "Combat",
-                            [3] = 1,
-                            [4] = false,
-                            [5] = game:GetService("Players").LocalPlayer.Character.Combat,
-                            [6] = "Melee"
-                        }
-                    }
-                }
-
-                game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
-                wait(0) -- Add a small delay to prevent spamming the server
-            else
-                break -- Break out of the loop if the toggle is disabled
-            end
-        end
-    end
-})
-
-
-
-
-
-local Button = Tab2:AddButton({
-  Name = "Invisible Toggle",
-  Description = "Makes the Toggles Invisible"
-})
-
-local Toggle1 = Tab1:AddToggle({
-  Name = "Auto train",
-  Description = "This is a <font color='rgb(88, 101, 242)'>Toggle</font> Example",
-  Default = false
-})
-
-local Toggle2 = Tab2:AddToggle({
-  Name = "Toggle 2",
-  Default = true
-})
-
-Button:Callback(Toggle1.Visible)
-Button:Callback(Toggle2.Visible)
-
-Toggle1:Callback(function(Value)
-  Toggle2:Set(false)
-end)
-Toggle2:Callback(function(Value)
-  Toggle1:Set(false)
-end)
-
-Tab2:AddSlider({
-  Name = "Slider",
-  Min = 1,
-  Max = 10,
-  Increase = 1,
-  Default = 5,
-  Callback = function(Value)
-    
-  end
-})
-
--- local Button = Tab2:AddButton({"Refresh Dropdown"})
-
-local Dropdown = Tab1:AddDropdown({
-  Name = "Players List",
-  Description = "Select the <font color='rgb(88, 101, 242)'>Number</font>",
-  Options = {"one", "two", "three"},
-  Default = "two",
-  Flag = "dropdown teste",
-  Callback = function(Value)
-    
-  end
-})
+Rayfield:LoadConfiguration()
