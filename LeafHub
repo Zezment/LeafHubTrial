@@ -3,11 +3,11 @@ local username = game.Players.LocalPlayer.Name
 
 
 
-local function sendWebhookMessage(description, itemsFound)
+local function sendWebhookMessage(itemsFound)
     local embedMessage = {
         title = "**Leaf Hub**",
         color = tonumber(0xFF0000), -- Red color
-        description = description,
+        description = "**Status:** Serverhopping",
         fields = {
             {
                 name = "**Username:**",
@@ -102,7 +102,7 @@ local function autoFruitServerHop()
     local teleportedHandles = teleportToAllHandles()
 
     -- Send webhook message with the teleport results
-    sendWebhookMessage("**Status:** Serverhopping", teleportedHandles)
+    sendWebhookMessage(teleportedHandles)
 
     -- Server hop after waiting 10 seconds
     wait(10)
