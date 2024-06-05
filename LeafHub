@@ -154,7 +154,7 @@ if _G.Auto_Serverhop then
 else
     local Toggle = Tab:CreateToggle({
         Name = "Auto farm fruit server hop",
-        CurrentValue = false,
+        CurrentValue = true,
         Flag = "Toggle1",
         Callback = function(state)
             _G.Auto_Serverhop = state
