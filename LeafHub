@@ -167,7 +167,7 @@ end
 
 local Toggle = Tab:CreateToggle({
     Name = "Toggle Example",
-    CurrentValue = false,
+    CurrentValue = true,
     Flag = "Toggle1",
     Callback = function(state)
         _G.Auto_Serverhop = state
