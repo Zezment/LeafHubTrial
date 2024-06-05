@@ -1,3 +1,7 @@
+local autoserverhop = true
+local WebhookUrl = "https://discord.com/api/webhooks/1247630152511520790/RewAS91IPlJcCrhSeA_L1wavrNO5qAxUpfBvvDvljj80kbYppZrZ5bPcw32VT1q5U7eB"
+
+-- Load Rayfield and create the window
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = "Rayfield Example Window",
