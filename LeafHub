@@ -159,22 +159,22 @@ local function autoFruitServerHop()
     end
 end
 
--- Check and execute if Auto Serverhop is enabled
 if _G.Auto_Serverhop then
     autoFruitServerHop()
+else
+    local Toggle = Tab:CreateToggle({
+        Name = "Auto farm fruit server hop",
+        CurrentValue = false,
+        Flag = "Toggle1",
+        Callback = function(state)
+            _G.Auto_Serverhop = state
+            if state then
+                autoFruitServerHop()
+            end
+        end
+    })
 end
 
-local Toggle = Tab:CreateToggle({
-    Name = "Auto farm fruit server hop",
-    CurrentValue = false,
-    Flag = "Toggle1",
-    Callback = function(state)
-        _G.Auto_Serverhop = state
-        if state then
-            autoFruitServerHop()
-        end
-    end
-})
 
 
 Rayfield:LoadConfiguration()
