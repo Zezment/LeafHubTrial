@@ -1,13 +1,48 @@
+
+-- Load Rayfield and create the window
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+    Name = "Rayfield Example Window",
+    LoadingTitle = "Rayfield Interface Suite",
+    LoadingSubtitle = "by Sirius",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = nil, -- Create a custom folder for your hub/game
+       FileName = "Big Hub"
+    },
+    Discord = {
+       Enabled = false,
+       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = false, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "Untitled",
+       Subtitle = "Key System",
+       Note = "No method of obtaining the key is provided",
+       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+})
+
+local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
+local Section = Tab:CreateSection("Section Example")
+
 local HttpService = game:GetService("HttpService")
-local username = game.Players.LocalPlayer.Name
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+
+local username = Players.LocalPlayer.Name
 
 
 
-local function sendWebhookMessage(itemsFound)
+local function sendWebhookMessage(description, itemsFound)
     local embedMessage = {
         title = "**Leaf Hub**",
         color = tonumber(0xFF0000), -- Red color
-        description = "**Status:** Serverhopping",
+        description = description,
         fields = {
             {
                 name = "**Username:**",
@@ -37,83 +72,42 @@ local function sendWebhookMessage(itemsFound)
     print("Webhook Response Body:", response.Body)
 end
 
+local function getLowestPlayerServer()
+    local servers = TeleportService:GetLocalPlayerTeleportQueue()
+    local lowestServer = nil
+    local lowestPlayerCount = math.huge
+
+    for _, server in ipairs(servers) do
+        if server.CurrentPlayers < lowestPlayerCount then
+            lowestPlayerCount = server.CurrentPlayers
+            lowestServer = server
+        end
+    end
+
+    return lowestServer
+end
+
 local function autoFruitServerHop()
-    -- Function to teleport the player to the position of a specified part
-    local function teleportToPart(player, part)
-        if player and player.Character and part then
-            player.Character:SetPrimaryPartCFrame(part.CFrame)
-            return true
-        end
-        return false
-    end
-
-    -- Function to find and teleport to all handles
-    local function teleportToAllHandles()
-        local tools = game.Workspace:GetChildren()
-        local teleportedHandles = {} -- Store teleported handles
-
-        for _, tool in ipairs(tools) do
-            if tool:IsA("Tool") then
-                -- Check if the Tool has a Handle which is a MeshPart
-                local handles = tool:GetChildren()
-                for _, handle in ipairs(handles) do
-                    if handle.Name == "Handle" and handle:IsA("MeshPart") then
-                        -- Teleport the player to the Handle
-                        local player = game.Players.LocalPlayer
-                        if teleportToPart(player, handle) then
-                            table.insert(teleportedHandles, "**" .. handle.Parent.Name .. "**") -- Store handle parent name
-                            print("Teleported to handle:", handle:GetFullName())
-                            wait(1) -- Wait for 1 second before executing next code
-                            -- Execute code to interact with the fruit
-                            function getNil(name, class, workspaceRef)
-                                local toolName = type(name) == "table" and workspaceRef[name[1]][name[2]][name[3]].Name or name
-                                for _, v in ipairs(workspaceRef:GetChildren()) do
-                                    if v.ClassName == class and v.Name == toolName then
-                                        return v
-                                    end
-                                end
-                            end
-                            local workspaceRef = game.Workspace:WaitForChild("__GAME"):WaitForChild("__Players"):WaitForChild("Jukiye2uwu6") -- Assuming __GAME and __Players are objects
-                            local toolName = workspaceRef:FindFirstChildOfClass("Tool").Name
-                            local args = {
-                                [1] = {
-                                    [1] = {
-                                        [1] = "\4",
-                                        [2] = "EatFruit",
-                                        [3] = getNil(toolName, "Tool", workspaceRef),
-                                        [4] = "Storage"
-                                    }
-                                }
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
-                            wait(2) -- Wait for 2 seconds before teleporting to the next fruit
-                        else
-                            warn("Failed to teleport player to Handle:", handle:GetFullName())
-                        end
-                    end
-                end
-            end
-        end
-
-        return teleportedHandles
-    end
-
-    -- Teleport to all handles and store teleported handles
-    local teleportedHandles = teleportToAllHandles()
+    local visible = false
 
     -- Send webhook message with the teleport results
-    sendWebhookMessage(teleportedHandles)
+    sendWebhookMessage("**Status:** Serverhopping")
 
-    -- Server hop after waiting 10 seconds
-    wait(10)
-    local success, errorMessage = pcall(function()
-        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
-    end)
-
-    if success then
-        print("Server hop successful.")
+    -- Fetch lowest player count server
+    local lowestServer = getLowestPlayerServer()
+    if lowestServer then
+        TeleportService:TeleportToPlaceInstance(lowestServer.PlaceId, lowestServer.GameId)
+        print("Teleported to server with lowest player count.")
     else
-        print("Error while attempting to server hop:", errorMessage)
+        print("No servers found to teleport.")
+    end
+
+    -- Toggle visibility of username
+    visible = not visible
+    if visible then
+        sendWebhookMessage("**Username hidden**")
+    else
+        sendWebhookMessage("**Username:** " .. username)
     end
 end
 
@@ -132,3 +126,8 @@ else
         end
     })
 end
+
+
+
+
+Rayfield:LoadConfiguration()
