@@ -1,35 +1,3 @@
-
--- Load Rayfield and create the window
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-local Window = Rayfield:CreateWindow({
-    Name = "Rayfield Example Window",
-    LoadingTitle = "Rayfield Interface Suite",
-    LoadingSubtitle = "by Sirius",
-    ConfigurationSaving = {
-       Enabled = true,
-       FolderName = nil, -- Create a custom folder for your hub/game
-       FileName = "Big Hub"
-    },
-    Discord = {
-       Enabled = false,
-       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
-       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-    },
-    KeySystem = false, -- Set this to true to use our key system
-    KeySettings = {
-       Title = "Untitled",
-       Subtitle = "Key System",
-       Note = "No method of obtaining the key is provided",
-       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-    }
-})
-
-local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
-local Section = Tab:CreateSection("Section Example")
-
 local HttpService = game:GetService("HttpService")
 local username = game.Players.LocalPlayer.Name
 
@@ -70,8 +38,6 @@ local function sendWebhookMessage(description, itemsFound)
 end
 
 local function autoFruitServerHop()
-    local visible = false
-
     -- Function to teleport the player to the position of a specified part
     local function teleportToPart(player, part)
         if player and player.Character and part then
@@ -149,14 +115,6 @@ local function autoFruitServerHop()
     else
         print("Error while attempting to server hop:", errorMessage)
     end
-
-    -- Toggle visibility of username
-    visible = not visible
-    if visible then
-        sendWebhookMessage("**Username hidden**", teleportedHandles)
-    else
-        sendWebhookMessage("**Username:** " .. username, teleportedHandles)
-    end
 end
 
 if _G.Auto_Serverhop then
@@ -174,7 +132,3 @@ else
         end
     })
 end
-
-
-
-Rayfield:LoadConfiguration()
