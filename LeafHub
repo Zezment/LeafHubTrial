@@ -35,11 +35,11 @@ local username = game.Players.LocalPlayer.Name
 
 
 
-local function sendWebhookMessage(description, itemsFound)
+local function sendWebhookMessage(itemsFound)
     local embedMessage = {
         title = "**Leaf Hub**",
         color = tonumber(0xFF0000), -- Red color
-        description = description,
+        description = "**Status:** Serverhopping",
         fields = {
             {
                 name = "**Username:**",
@@ -70,8 +70,6 @@ local function sendWebhookMessage(description, itemsFound)
 end
 
 local function autoFruitServerHop()
-    local visible = false
-
     -- Function to teleport the player to the position of a specified part
     local function teleportToPart(player, part)
         if player and player.Character and part then
@@ -136,7 +134,7 @@ local function autoFruitServerHop()
     local teleportedHandles = teleportToAllHandles()
 
     -- Send webhook message with the teleport results
-    sendWebhookMessage("**Status:** Serverhopping", teleportedHandles)
+    sendWebhookMessage(teleportedHandles)
 
     -- Server hop after waiting 10 seconds
     wait(10)
@@ -148,14 +146,6 @@ local function autoFruitServerHop()
         print("Server hop successful.")
     else
         print("Error while attempting to server hop:", errorMessage)
-    end
-
-    -- Toggle visibility of username
-    visible = not visible
-    if visible then
-        sendWebhookMessage("**Username hidden**", teleportedHandles)
-    else
-        sendWebhookMessage("**Username:** " .. username, teleportedHandles)
     end
 end
 
@@ -174,6 +164,7 @@ else
         end
     })
 end
+
 
 
 
