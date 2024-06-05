@@ -31,10 +31,7 @@ local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Section Example")
 
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-
-local username = Players.LocalPlayer.Name
+local username = game.Players.LocalPlayer.Name
 
 
 
@@ -72,42 +69,93 @@ local function sendWebhookMessage(description, itemsFound)
     print("Webhook Response Body:", response.Body)
 end
 
-local function getLowestPlayerServer()
-    local servers = TeleportService:GetLocalPlayerTeleportQueue()
-    local lowestServer = nil
-    local lowestPlayerCount = math.huge
-
-    for _, server in ipairs(servers) do
-        if server.CurrentPlayers < lowestPlayerCount then
-            lowestPlayerCount = server.CurrentPlayers
-            lowestServer = server
-        end
-    end
-
-    return lowestServer
-end
-
 local function autoFruitServerHop()
     local visible = false
 
-    -- Send webhook message with the teleport results
-    sendWebhookMessage("**Status:** Serverhopping")
+    -- Function to teleport the player to the position of a specified part
+    local function teleportToPart(player, part)
+        if player and player.Character and part then
+            player.Character:SetPrimaryPartCFrame(part.CFrame)
+            return true
+        end
+        return false
+    end
 
-    -- Fetch lowest player count server
-    local lowestServer = getLowestPlayerServer()
-    if lowestServer then
-        TeleportService:TeleportToPlaceInstance(lowestServer.PlaceId, lowestServer.GameId)
-        print("Teleported to server with lowest player count.")
+    -- Function to find and teleport to all handles
+    local function teleportToAllHandles()
+        local tools = game.Workspace:GetChildren()
+        local teleportedHandles = {} -- Store teleported handles
+
+        for _, tool in ipairs(tools) do
+            if tool:IsA("Tool") then
+                -- Check if the Tool has a Handle which is a MeshPart
+                local handles = tool:GetChildren()
+                for _, handle in ipairs(handles) do
+                    if handle.Name == "Handle" and handle:IsA("MeshPart") then
+                        -- Teleport the player to the Handle
+                        local player = game.Players.LocalPlayer
+                        if teleportToPart(player, handle) then
+                            table.insert(teleportedHandles, "**" .. handle.Parent.Name .. "**") -- Store handle parent name
+                            print("Teleported to handle:", handle:GetFullName())
+                            wait(1) -- Wait for 1 second before executing next code
+                            -- Execute code to interact with the fruit
+                            function getNil(name, class, workspaceRef)
+                                local toolName = type(name) == "table" and workspaceRef[name[1]][name[2]][name[3]].Name or name
+                                for _, v in ipairs(workspaceRef:GetChildren()) do
+                                    if v.ClassName == class and v.Name == toolName then
+                                        return v
+                                    end
+                                end
+                            end
+                            local workspaceRef = game.Workspace:WaitForChild("__GAME"):WaitForChild("__Players"):WaitForChild("Jukiye2uwu6") -- Assuming __GAME and __Players are objects
+                            local toolName = workspaceRef:FindFirstChildOfClass("Tool").Name
+                            local args = {
+                                [1] = {
+                                    [1] = {
+                                        [1] = "\4",
+                                        [2] = "EatFruit",
+                                        [3] = getNil(toolName, "Tool", workspaceRef),
+                                        [4] = "Storage"
+                                    }
+                                }
+                            }
+                            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
+                            wait(2) -- Wait for 2 seconds before teleporting to the next fruit
+                        else
+                            warn("Failed to teleport player to Handle:", handle:GetFullName())
+                        end
+                    end
+                end
+            end
+        end
+
+        return teleportedHandles
+    end
+
+    -- Teleport to all handles and store teleported handles
+    local teleportedHandles = teleportToAllHandles()
+
+    -- Send webhook message with the teleport results
+    sendWebhookMessage("**Status:** Serverhopping", teleportedHandles)
+
+    -- Server hop after waiting 10 seconds
+    wait(10)
+    local success, errorMessage = pcall(function()
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
+    end)
+
+    if success then
+        print("Server hop successful.")
     else
-        print("No servers found to teleport.")
+        print("Error while attempting to server hop:", errorMessage)
     end
 
     -- Toggle visibility of username
     visible = not visible
     if visible then
-        sendWebhookMessage("**Username hidden**")
+        sendWebhookMessage("**Username hidden**", teleportedHandles)
     else
-        sendWebhookMessage("**Username:** " .. username)
+        sendWebhookMessage("**Username:** " .. username, teleportedHandles)
     end
 end
 
@@ -126,6 +174,7 @@ else
         end
     })
 end
+
 
 
 
