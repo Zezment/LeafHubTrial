@@ -1,4 +1,4 @@
-
+if script_key == "{key}" then
 -- Load Rayfield and create the window
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
@@ -171,3 +171,4 @@ end
 
 
 Rayfield:LoadConfiguration()
+end
